@@ -527,7 +527,7 @@
             }
         }
 
-        // Odun Kes tuşu (Doğrudan odunu keser, 33 blok mesafe sınırı)
+        // Odun Kes tuşu (Doğrudan keser, 33 blok mesafe sınırı)
         function odunKes() {
             let centerX = window.innerWidth / 2;
             let centerY = window.innerHeight / 2 + 50;
@@ -551,11 +551,18 @@
 
             for (let el of activeElements) {
                 let mesafe = Math.hypot(el.x - centerX, el.y - centerY);
-                if (mesafe < el.radius && el.distance <= 65.0) {
+                if (mesafe < el.radius && el.distance <= 33.0) {
                     if (el.type === 'tree') {
                         destroyedItems.add(el.id);
                         woodCount++;
-                    } else if (el.type !== 'cow') {
+                    } else if (el.type === 'cow') {
+                        cowHealths[el.id]--;
+                        if (cowHealths[el.id] <= 0) {
+                            destroyedItems.add(el.id);
+                            beefCount++;
+                            leatherCount++;
+                        }
+                    } else {
                         destroyedItems.add(el.id);
                     }
                     sahneyiGuncelle();
