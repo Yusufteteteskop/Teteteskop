@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelişmiş Çarpma Yarışması</title>
+    <style>
+        body {
+            background-color: #1a1a2e;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .game-container {
+            background-color: #16213e;
+            border: 6px solid #4ecca3;
+            border-radius: 20px;
+            padding: 20px;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 2px solid #4ecca3;
+            background-color: #0f3460;
+            color: white;
+            font-size: 15px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin: 10px 0;
+            text-align: left;
+            background: #0f3460;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #4ecca3;
+        }
+        .checkbox-group label {
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+        .start-btn {
+            background-color: #ff2e63;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+        }
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #4ecca3;
+            font-weight: bold;
+        }
+        .question {
+            font-size: 38px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+            color: #ff2e63;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .option-btn {
+            background-color: #0f3460;
+            color: white;
+            border: 3px solid #ff2e63;
+            border-radius: 12px;
+            padding: 18px;
+            font-size: 22px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .option-btn:active {
+            background-color: #ff2e63;
+        }
+        .timer-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #0f3460;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .timer-progress {
+            width: 100%;
+            height: 100%;
+            background-color: #4ecca3;
+        }
+        .jokers {
+            display: flex;
+            justify-content: space-around;
+        }
+        .joker-btn {
+            background-color: #ff2e63;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .joker-btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+        .section-title {
+            font-size: 14px;
+            color: #4ecca3;
+            margin: 8px 0 2px 0;
+            text-align: left;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- GİRİŞ EKRANI -->
+        <div id="startScreen" class="screen active">
+            <h2 style="color: #4ecca3; margin-top: 0;">Çarpma Yarışması</h2>
+            
+            <input type="number" id="playerAge" placeholder="Yaşını Yaz (Max 99)" min="5" max="99">
+            
+            <select id="playerGrade">
+                <option value="" disabled selected>Sınıfını Seç</option>
+                <option value="1">1. Sınıf</option>
+                <option value="2">2. Sınıf</option>
+                <option value="3">3. Sınıf</option>
+                <option value="4">4. Sınıf</option>
+                <option value="5">5. Sınıf</option>
+                <option value="6">6. Sınıf</option>
+                <option value="7">7. Sınıf</option>
+                <option value="8">8. Sınıf ve Üzeri</option>
+            </select>
+
+            <div class="section-title">Hangi Sayılara Çalışmak İstiyorsun?</div>
+            <div style="text-align: left; margin-bottom: 5px;">
+                <label style="color: #4ecca3; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"> Tümünü Seç (1-99'a kadar)
+                </label>
+            </div>
+            
+            <div class="checkbox-group" id="numberCheckboxes">
+                <label><input type="checkbox" name="num" value="1"> 1</label>
+                <label><input type="checkbox" name="num" value="2"> 2</label>
+                <label><input type="checkbox" name="num" value="3"> 3</label>
+                <label><input type="checkbox" name="num" value="4"> 4</label>
+                <label><input type="checkbox" name="num" value="5"> 5</label>
+                <label><input type="checkbox" name="num" value="6"> 6</label>
+                <label><input type="checkbox" name="num" value="7"> 7</label>
+                <label><input type="checkbox" name="num" value="8"> 8</label>
+                <label><input type="checkbox" name="num" value="9"> 9</label>
+                <label><input type="checkbox" name="num" value="10"> 10</label>
+            </div>
+
+            <button class="start-btn" onclick="startGame()">Oyuna Başla</button>
+        </div>
+
+        <!-- OYUN EKRANI -->
+        <div id="gameScreen" class="screen">
+            <div class="score-board">
+                <span id="scoreDisplay">Puan: 0</span>
+                <span id="timerDisplay">Süre: 12s</span>
+            </div>
+            
+            <div class="timer-bar">
+                <div class="timer-progress" id="timerBar"></div>
+            </div>
+
+            <div class="question" id="questionDisplay"></div>
+
+            <div class="options-grid" id="optionsGrid"></div>
+
+            <div class="jokers">
+                <button class="joker-btn" id="joker50" onclick="use5050()">50:50</button>
+                <button class="joker-btn" id="jokerTime" onclick="useExtraTime()">+5 Saniye</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let timeLeft = 12;
+        let timerInterval;
+        let correctAnswer = 0;
+        let is5050Used = false;
+        let selectedGrade = 2;
+        let chosenNumbers = [];
+
+        function toggleSelectAll(master) {
+            let checkboxes = document.querySelectorAll('input[name="num"]');
+            checkboxes.forEach(cb => cb.checked = master.checked);
+        }
+
+        function startGame() {
+            let ageInput = document.getElementById('playerAge').value;
+            let gradeSelect = document.getElementById('playerGrade').value;
+            
+            let checkboxes = document.querySelectorAll('input[name="num"]:checked');
+            chosenNumbers = [];
+            checkboxes.forEach(cb => {
+                chosenNumbers.push(parseInt(cb.value));
+            });
+
+            if (!ageInput || !gradeSelect) {
+                alert("Lütfen yaşını ve sınıfını seç!");
+                return;
+            }
+
+            let age = parseInt(ageInput);
+            if (age < 5 || age > 99) {
+                alert("Yaşın 5 ile 99 arasında olmalıdır!");
+                return;
+            }
+
+            selectedGrade = parseInt(gradeSelect);
+
+            document.getElementById('startScreen').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            clearInterval(timerInterval);
+            timeLeft = 12;
+            document.getElementById('timerDisplay').innerText = "Süre: 12s";
+            document.getElementById('timerBar').style.width = "100%";
+
+            let num1, num2;
+
+            if (chosenNumbers.length > 0) {
+                let randomIndex = Math.floor(Math.random() * chosenNumbers.length);
+                num1 = chosenNumbers[randomIndex];
+            } else {
+                num1 = Math.floor(Math.random() * 5) + 1;
+            }
+
+            let allChecked = document.getElementById('selectAll').checked;
+            if (allChecked || selectedGrade >= 5) {
+                num2 = Math.floor(Math.random() * 90) + 2; 
+            } else if (selectedGrade === 1) {
+                num2 = Math.floor(Math.random() * 5) + 1; 
+            } else if (selectedGrade === 2 || selectedGrade === 3) {
+                num2 = Math.floor(Math.random() * 9) + 1; 
+            } else {
+                num2 = Math.floor(Math.random() * 12) + 1; 
+            }
+
+            correctAnswer = num1 * num2;
+            document.getElementById('questionDisplay').innerText = num1 + " x " + num2 + " = ?";
+
+            let options = [correctAnswer];
+            while (options.length < 4) {
+                let offset = Math.floor(Math.random() * 20) - 10;
+                let wrong = correctAnswer + offset;
+                if (wrong > 0 && !options.includes(wrong)) {
+                    options.push(wrong);
+                }
+            }
+
+            options.sort(function() { return Math.random() - 0.5; });
+
+            let grid = document.getElementById('optionsGrid');
+            grid.innerHTML = "";
+            for (let i = 0; i < options.length; i++) {
+                let btn = document.createElement('button');
+                btn.className = "option-btn";
+                btn.innerText = options[i];
+                btn.onclick = function() {
+                    checkAnswer(options[i]);
+                };
+                grid.appendChild(btn);
+            }
+
+            is5050Used = false;
+            document.getElementById('joker50').disabled = false;
+            document.getElementById('jokerTime').disabled = false;
+
+            startTimer();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(function() {
+                timeLeft--;
+                document.getElementById('timerDisplay').innerText = "Süre: " + timeLeft + "s";
+                document.getElementById('timerBar').style.width = (timeLeft * 8.33) + "%";
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    score = 0; 
+                    document.getElementById('scoreDisplay').innerText = "Puan: " + score;
+                    nextQuestion();
+                }
+            }, 1000);
+        }
+
+        function checkAnswer(selectedVal) {
+            if (selectedVal === correctAnswer) {
+                score += 10;
+            } else {
+                score = 0; 
+            }
+            document.getElementById('scoreDisplay').innerText = "Puan: " + score;
+            nextQuestion();
+        }
+
+        function use5050() {
+            if (is5050Used) return;
+            is5050Used = true;
+            document.getElementById('joker50').disabled = true;
+
+            let buttons = document.getElementsByClassName('option-btn');
+            let hiddenCount = 0;
+            for (let i = 0; i < buttons.length; i++) {
+                let val = parseInt(buttons[i].innerText);
+                if (val !== correctAnswer && hiddenCount < 2) {
+                    buttons[i].style.visibility = "hidden";
+                    hiddenCount++;
+                }
+            }
+        }
+
+        function useExtraTime() {
+            timeLeft += 5;
+            document.getElementById('jokerTime').disabled = true;
+            document.getElementById('timerDisplay').innerText = "Süre: " + timeLeft + "s";
+        }
+    </script>
+</body>
+</html>
+
